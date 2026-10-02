@@ -12,10 +12,17 @@ connectDB();
 
 const app = express();
 
-// CORS configuration
+// Accept the local development client and the deployed client. CLIENT_URL can
+// contain a comma-separated list for additional deployment environments.
+const allowedClientOrigins = new Set([
+  'http://localhost:5173',
+  'https://codetrack-frontend-hsz3.onrender.com',
+  ...(process.env.CLIENT_URL || '').split(',').map((origin) => origin.trim()).filter(Boolean)
+]);
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: (origin, callback) => callback(null, !origin || allowedClientOrigins.has(origin)),
     credentials: true
   })
 );
